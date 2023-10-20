@@ -23,6 +23,91 @@ describe('./musicians endpoint', () => {
         expect(response.statusCode).toBe(200);
         console.log(JSON.stringify(responseData,null,2))
     })
-    
+    test("Testing musician req params", async () => {
+        //send request to /musicians endpoint
+        const response = await request(app).get("/musicians/2");
+        const responseData = JSON.parse(response.text);
+        expect(response.statusCode).toBe(200);
+        expect(responseData.name).toBe("Drake");
+    }) 
+
+    test("Testing musician post request", async () => {
+        //send request to /musicians endpoint
+        const response = await request(app)
+            .post("/musicians")
+            .send({ name: "Rihanna" , instrument: "Voice"})
+
+        expect(response.statusCode).toBe(200);
+      
+    }) 
+
+    test("Testing musician post validation", async () => {
+        //send request to /musicians endpoint
+        const response = await request(app)
+            .post("/musicians")
+            .send({ name: "" , instrument: ""})
+            
+        expect(response.statusCode).toBe(200);
+        const responseData = JSON.parse(response.text)
+        expect(responseData.error).toEqual( [
+              {
+                "type": "field",
+                "value": "",
+                "msg": "Invalid value",
+                "path": "name",
+                "location": "body"
+              },
+              {
+                "type": "field",
+                "value": "",
+                "msg": "Invalid value",
+                "path": "instrument",
+                "location": "body"
+              },{
+                "type": "field",
+                "value": "",
+                "msg": "Invalid value",
+                "path": "name",
+                "location": "body"
+              }
+                ]);
+
+      
+    }) 
+
+    test("Testing musician post validation length", async () => {
+        //send request to /musicians endpoint
+        const response = await request(app)
+            .post("/musicians")
+            .send({ name: "f" , instrument: "Voice"})
+            
+        expect(response.statusCode).toBe(200);
+        const responseData = JSON.parse(response.text)
+        expect(responseData.error).toEqual( [
+            {
+                "type": "field",
+                "value": "f",
+                "msg": "Invalid value",
+                "path": "name",
+                "location": "body"
+              }
+                ]);
+      
+    }) 
+
+    test("Testing musician update request", async () => {
+        //send request to /musicians endpoint
+        const response = await request(app)
+            .put("/musicians/2")
+            .send({name:"Alex Turner", instrument:"Keyboard"})
+        expect(response.statusCode).toBe(200);
+    })     
+
+    test("Testing musician delete request", async () => {
+        //send request to /musicians endpoint
+        const response = await request(app)
+            .delete("/musicians/2")
+        expect(response.statusCode).toBe(200);
+    })
     
 })
